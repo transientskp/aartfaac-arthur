@@ -19,3 +19,10 @@ Why ARTHUR?
 -----------
 
 because Arthur is the anthropomorphic AARTFAAC
+
+Notes
+-----
+
+This repo uses git lfs. If you want to run the test suite
+dont forget to unzip the tarball in `test/data`.
+
