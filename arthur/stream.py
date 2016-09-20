@@ -66,16 +66,16 @@ def loop_images_in_path(path):
             return im.tobytes()
 
 
-def stream(generator, rtmp_stream):
+def stream(iterator, rtmp_stream):
     """
     stream the images returned by generated to rtmp server
 
     args:
-        generator (generator): a image data generator
+        iterator (iterator): a image data iterator
         rtmp_stream (str): a rtmp url
     """
     pipe = setup_stream_pipe(rtmp_stream)
-    for image_bytes in generator:
+    for image_bytes in iterator:
         for i in range(FPS):
             pipe.stdin.write(image_bytes)
         duty_cycle = 1  # seconds
