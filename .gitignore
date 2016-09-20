@@ -95,3 +95,6 @@ ENV/
 .idea
 
 
+# the big file which is tarballed in git lfs
+test/data/2aartfaac.vis
+

@@ -1,0 +1,8 @@
+2aartfaac.vis.tgz is a gzip tarball containing 2 sets of raw visibilities.
+
+run:
+
+tar zxvf 2aartfaac.vs.tgz
+
+to extract them and use them during test run.
+

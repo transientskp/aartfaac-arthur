@@ -1,7 +1,10 @@
 import arthur
 import unittest
+from os import path
 
-VIS_PATH = '/scratch/vis/S295-160818140952.vis'
+
+HERE = path.dirname(__file__)
+VIS_PATH = path.join(HERE, 'data/2aartfaac.vis')
 
 
 class TestArthur(unittest.TestCase):

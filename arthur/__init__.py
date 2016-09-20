@@ -109,9 +109,7 @@ def full_calculation(visabilities_file):
     h = open(visabilities_file, 'rb')
     raw_header = h.read(constants.LEN_HDR)
     start_time, end_time = parse_header(raw_header)
-
-    raw_body = np.empty(constants.NUM_BSLN * constants.NUM_CHAN * constants.NUM_POLS, dtype=np.complex64)
-    h.readinto(raw_body)
+    raw_body = np.fromfile(h, count=(constants.NUM_BSLN * constants.NUM_CHAN * constants.NUM_POLS), dtype=np.complex64)
     indices = create_indices(0, constants.NUM_CHAN, constants.NUM_BSLN, constants.NUM_POLS)
     body = reshape_body(raw_body, indices, constants.NUM_CHAN, constants.NUM_BSLN)
     lag_data = np.zeros(60, dtype=np.float32)
