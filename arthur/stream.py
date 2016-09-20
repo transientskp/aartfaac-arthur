@@ -4,23 +4,11 @@ from PIL import Image
 import subprocess
 import time
 import monotonic
-import sys
-
-images_path = '/scratch/aartfaac_with_subbands/S298'
-images = sorted([os.path.join(images_path, i) for i in os.listdir(images_path)])
-
-if len(sys.argv) < 2:
-    print("usage: {} YOUTUBE_SECRET".format(sys.argv[0]))
-    sys.exit(1)
-else:
-    SECRET = sys.argv[1]
 
 FPS = 25
 
 cmd = ["ffmpeg",
        "-f", "alsa", "-ac", "2", "-i", "hw:0,0",
-       #'-i', 'gijs.mp3',
-       #'-i', 'playlist.txt',
 
        # stream image
        '-re',
@@ -39,23 +27,56 @@ cmd = ["ffmpeg",
        "-threads", "6",
        "-bufsize", "512k",
        "-f", "flv",                # required for rtmp
-       "rtmp://a.rtmp.youtube.com/live2/" + SECRET    # the youtube stream url
+       {}                          # the rtmp stream url
        ]
 
 
-pipe = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+def setup_stream_pipe(rtmp_url):
+    """
+    Setup a encoding process where you can pipe images to.
+
+    args:
+        rtmp_url (str): a rtmp url, for example rtmp://a.rtmp.youtube.com/live2/{SECRET}
+
+    returns:
+        subprocess.Popen: a subprocess pipe. Use pipe.stdin.write for writing images.
+    """
+    pipe = subprocess.Popen(cmd.format(rtmp_url), stdin=subprocess.PIPE)
+    return pipe
 
 
-while True:
-    for image_path in images:
-        print(image_path)
-        i = casa_image(image_path)
-        data = i.getdata().squeeze()
-        data -= data.min()
-        data *= (255/data.max())
-        arr = data.astype('uint8')
-        im = Image.fromarray(arr, 'L')
+def loop_images_in_path(path):
+    """
+    args:
+        path (str): path to folder containing images
+
+    returns:
+        generator: yields casacore images
+    """
+    images = sorted([os.path.join(path, i) for i in os.listdir(path)])
+    while True:
+        for image_path in images:
+            print(image_path)
+            image = casa_image(image_path)
+            data = image.getdata().squeeze()
+            data -= data.min()
+            data *= (255 / data.max())
+            arr = data.astype('uint8')
+            im = Image.fromarray(arr, 'L')
+            return im.tobytes()
+
+
+def stream(generator, rtmp_stream):
+    """
+    stream the images returned by generated to rtmp server
+
+    args:
+        generator (generator): a image data generator
+        rtmp_stream (str): a rtmp url
+    """
+    pipe = setup_stream_pipe(rtmp_stream)
+    for image_bytes in generator:
         for i in range(FPS):
-            pipe.stdin.write(im.tobytes())
+            pipe.stdin.write(image_bytes)
         duty_cycle = 1  # seconds
         time.sleep(duty_cycle - monotonic.monotonic() % duty_cycle)
