@@ -2,6 +2,7 @@
 
 import sys
 from arthur.imaging import full_calculation
+from arthur.io import read_data
 from arthur.plot import plot_image
 
 if len(sys.argv) < 2:
@@ -12,5 +13,6 @@ if len(sys.argv) < 2:
 else:
     path = sys.argv[1]
 
-start_time, img_data = full_calculation(path)
+start_time, body = read_data(path)
+img_data = full_calculation(body)
 plot_image(start_time, img_data)
