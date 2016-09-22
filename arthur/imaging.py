@@ -47,7 +47,7 @@ def make_image(cm):
     return image(cm, constants.ANTPOS, constants.FRQ, constants.IMAGE_RES)
 
 
-def historical_channels(body):
+def historical_channels(body, new_row):
     """
     Make a matrix of historical channel data
 
@@ -83,6 +83,6 @@ def full_calculation(body):
     corr_data[np.diag_indices(constants.NUM_ANTS)] = np.min(corr_data)
 
     image = make_image(cm)
-    chan_data = historical_channels(body)
+    chan_row = calc_channels(body)
 
-    return image, chan_data, corr_data
+    return image, corr_data, chan_row

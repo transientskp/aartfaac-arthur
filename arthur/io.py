@@ -15,7 +15,6 @@ def parse_header(header):
         tuple: start date (datetime.time), body (numpy.array)
 
     """
-    print(len(header))
     magic, _, start, end = struct.unpack("<IIdd", header[0:24])
     assert magic == constants.HDR_MAGIC
     return start, end
