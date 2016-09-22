@@ -18,20 +18,17 @@ def calculate_annotations(date):
     obs = ephem.Observer()
     obs.pressure = 0  # To prevent refraction corrections.
     obs.lon, obs.lat = '6.869837540', '52.915122495'  # CS002 on LOFAR
+    obs.date = date
     objects = [
         ephem.Moon(),
         ephem.Jupiter(),
         ephem.Sun(),
-        ephem.readdb('Cas-A,f|J, 23:23:26.0, 58:48:00,99.00,2000'),
-        ephem.readdb('Cyg-A,f|J, 19:59:28.35, 40:44:02,99.00,2000'),
-        ephem.readdb('NCP,f|J, 0, 90:00:00,99.00,2000'),
-        ephem.readdb('Galactic Center,f|J, 17:45:40.0, -29:00:28.1,99.00, 2000'),
+        ephem.readdb('Cas-A,f|J,23:23:26.0,58:48:00,99.00,2000'),
+        ephem.readdb('Cyg-A,f|J,19:59:28.35,40:44:02,99.00,2000'),
+        ephem.readdb('NCP,f|J, 0,90:00:00,99.00,2000'),
+        ephem.readdb('Galactic Center,f|J, 17:45:40.0,-29:00:28.1,99.00,2000'),
     ]
 
-    # annotations
-    obs.date = date
-
-    # Compute local coordinates of all objects to be plotted.
     annotations = {}
     for o in objects:
         o.compute(obs)
