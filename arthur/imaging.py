@@ -1,5 +1,5 @@
 import time
-
+from datetime import datetime
 import numpy as np
 from arthur import constants
 from arthur.gridding import image
@@ -48,9 +48,25 @@ def make_image(cm):
 
 
 def historical_channels(body):
+    """
+    Make a matrix of historical channel data
+
+    TODO: add history
+
+    args:
+        body (numpy.array): a sky image
+    returns:
+        numpy.array: a matrix containing historical channel data
+
+    """
     chan_data = np.zeros((constants.NUM_CHAN, 60), dtype=np.float32)
     chan_data = np.roll(chan_data, 1)
     chan_data[:, 0] = calc_channels(body)
+    return chan_data
+
+
+def calculate_lag(date):
+    return datetime.now() - date
 
 
 def historical_lag(start_time):
@@ -66,4 +82,7 @@ def full_calculation(body):
     corr_data = np.abs(cm)
     corr_data[np.diag_indices(constants.NUM_ANTS)] = np.min(corr_data)
 
-    return make_image(cm)
+    image = make_image(cm)
+    chan_data = historical_channels(body)
+
+    return image, chan_data, corr_data

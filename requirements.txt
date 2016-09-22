@@ -1,8 +1,0 @@
-pillow
-python-casacore
-monotonic
-astropy
-ephem
-matplotlib
-#aplpy
-scipy
