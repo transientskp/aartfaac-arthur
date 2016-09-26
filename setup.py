@@ -19,7 +19,7 @@ scripts = [
 ]
 
 setup(
-    name="arthur",
+    name="aartfaac-arthur",
     version=__version__,
     packages=find_packages(),
     scripts=scripts,
@@ -32,8 +32,8 @@ setup(
     author_email="gijs@pythonic.nl",
     description="Scientific Compute Container Spec Parser",
     license="GPL3",
-    keywords="science docker yaml json",
-    url="https://github.com/gijzelaerr/kliko",
+    keywords="science astronomy aartfaac",
+    url="https://github.com/transientskp/aartfaac-arthur",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",
