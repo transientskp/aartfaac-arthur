@@ -1,0 +1,21 @@
+{%  extends 'pages/base.html' %}
+{% block content %}
+
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <div class="jumbotron text-center">
+                        <h1>AARTFAAC</h1>
+                        <p>The Amsterdam-ASTRON Radio Transients Facility And Analysis Center (AARTFAAC) all sky monitor is a sensitive, real time transient detector based on the Low Frequency Array (LOFAR). It generates images of the low frequency radio sky with spatial resolution of 10s of arcmin, MHz bandwidths, and a time cadence of a few seconds, while simultaneously but independently observing with LOFAR.</>
+                        <p>
+                            <a class="btn btn-primary btn-lg" href="{% url 'about' %}">Learn more</a>
+                            <a class="btn btn-primary btn-lg" href="{% url 'live' %}">Live stream!</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+    </header>
+
+
+{% endblock %}

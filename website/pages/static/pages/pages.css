@@ -1,0 +1,16 @@
+.logo {
+    padding-top: 20px;
+}
+
+header {
+    padding-top: 250px;
+    padding-bottom: 250px;
+    background-size: cover;
+    -o-background-size: cover;
+    background-position: center;
+    background-image: url(lofar2.png);
+}
+
+.jumbotron {
+    opacity: 0.8;
+}
