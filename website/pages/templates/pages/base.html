@@ -2,7 +2,7 @@
 <html>
 <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="{%  static 'pages/flatly.min.css' %}">
+    <link rel="stylesheet" href="{%  static 'pages/darkly.min.css' %}">
     <link rel="stylesheet" href="{%  static 'pages/pages.css' %}">
 </head>
 
@@ -22,7 +22,7 @@
             <ul class="nav navbar-nav">
 
                 <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="themes">About<span class="caret"></span></a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="themes"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> About<span class="caret"></span></a>
                     <ul class="dropdown-menu" aria-labelledby="themes">
                         <li><a href="{% url 'about' %}">Detailed description</a></li>
                         <li><a href="{% url 'team' %}">Team</a></li>
@@ -33,10 +33,13 @@
                     </ul>
                 </li>
 
-                <li><a href="{% url 'live' %}">Live TV</a></li>
-                <li><a href="{% url 'contact' %}">Contact</a></li>
 
 
+                <li><a href="{% url 'live' %}"><span class="glyphicon glyphicon-facetime-video" aria-hidden="true"></span> Live TV</a></li>
+                <li><a href="{% url 'contact' %}"><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span> Contact</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="monitoring"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> monitoring</a></li>
             </ul>
 
         </div>
