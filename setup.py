@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-__version__ = "0.1"
+__version__ = "0.2dev"
 
 
 install_requires = (
@@ -30,14 +30,14 @@ setup(
     },
     author="Gijs Molenaar",
     author_email="gijs@pythonic.nl",
-    description="Scientific Compute Container Spec Parser",
+    description="AARTFAAC visualisation utilities",
     license="GPL3",
     keywords="science astronomy aartfaac",
     url="https://github.com/transientskp/aartfaac-arthur",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: GNU General Public License v2 (GPLv3)",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: POSIX",
         "Programming Language :: Python :: 3.5",
         "Topic :: Scientific/Engineering",
