@@ -10,6 +10,7 @@ install_requires = (
     'ephem',
     'matplotlib',
     'scipy',
+    'monotonic',
 )
 
 

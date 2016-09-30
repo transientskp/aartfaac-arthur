@@ -152,3 +152,4 @@ def plot_diff(diff_data, freq, date):
     plt.ylabel(r'$\leftarrow South - North \rightarrow$')
     plt.xticks([])
     plt.yticks([])
+    return fig
