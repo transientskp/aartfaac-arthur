@@ -1,1 +1,2 @@
 test/data/2aartfaac.vis.tgz filter=lfs diff=lfs merge=lfs -text
+test/data/tables/*.image filter=lfs diff=lfs merge=lfs -text

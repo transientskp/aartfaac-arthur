@@ -27,6 +27,15 @@ def parse_header(raw_header):
 
 
 def parse_body(raw_body):
+    """
+    parse a raw set of bytes and return a reshaped numpy array
+
+    args:
+        raw_body (bytes): the raw matrix
+
+    returns:
+        numpy.array
+    """
     serial_body = np.fromstring(raw_body,  dtype=np.complex64)
     indices = create_indices(0, constants.NUM_CHAN, constants.NUM_BSLN,
                              constants.NUM_POLS)
@@ -36,15 +45,24 @@ def parse_body(raw_body):
 
 
 def reader(producer, bytes_):
-    """Read an amount of bytes from a socket or file"""
+    """
+    Read an amount of bytes from a socket or file
+
+    args:
+        producer: a socket or file object
+        bytes_ (int): number of bytes to read
+
+    returns:
+        bytes: the read data
+    """
     if type(producer) == socket.socket:
         result = BytesIO()
         count = bytes_
         while count > 0:
             recv = producer.recv(count)
             if len(recv) == 0:
-                logger.info("client closed connection")
-                raise StopIteration("client closed connection")
+                logger.warning("client closed connection")
+                raise IOError("client closed connection")
             count -= len(recv)
             result.write(recv)
         return result.getvalue()
@@ -52,16 +70,18 @@ def reader(producer, bytes_):
         # assuming file like interface
         data = producer.read(bytes_)
         if len(data) != bytes_:
-            logger.info("end of file")
-            raise StopIteration("end of file")
+            logger.warning("end of file")
+            raise IOError("end of file")
         return data
 
 
 def read_data(handler):
     """
     read one data window from a file or socket like object.
+
     args:
         handler: an object with a file like interface (read)
+
     returns:
         tuple (date, body)
     """
@@ -84,7 +104,10 @@ def read_full(path):
     """
     handler = open(path, 'rb')
     while True:
-        yield read_data(handler)
+        try:
+            yield read_data(handler)
+        except IOError:
+            raise StopIteration
 
 
 @lru_cache()
@@ -126,13 +149,29 @@ def reshape_body(raw_body, indices, channels, baselines):
 
 
 def listen_socket(port=5000, host='localhost'):
-    logger.info("waiting for connection...")
+    """
+    Listen on socket, wait for a client to connect. Then the client is
+    expected to stream raw visilibities. If the client disconnects the
+    server will wait for a reconnect.
+
+    args:
+        port (int): which port to listen on
+        host (str): which interface to listen on
+
+    returns:
+        iterator
+
+    """
     sid = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sid.bind((host, port))
     sid.listen(1)
 
     while True:
+        logger.info("waiting for connection...")
         handler, address = sid.accept()
         logger.info("connection from {}".format(address))
         while True:
-            yield read_data(handler)
+            try:
+                yield read_data(handler)
+            except IOError:
+                break

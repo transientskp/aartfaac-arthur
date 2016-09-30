@@ -6,8 +6,8 @@ from arthur.io import listen_socket
 
 def main():
     logging.basicConfig(level=logging.INFO)
-    for bla in listen_socket():
-        print(bla)
+    for date, mat in listen_socket():
+        print(date)
 
 if __name__ == '__main__':
     main()
