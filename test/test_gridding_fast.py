@@ -2,7 +2,7 @@ import unittest
 
 from arthur.data import load_antpos
 import numpy as np
-from arthur import gridding
+from arthur.gridding_fast import grid
 from arthur import constants
 
 FRQ = 58398437.5  # Central observation frequency in Hz
@@ -18,6 +18,6 @@ class testGridding(unittest.TestCase):
         C = np.zeros((constants.NUM_ANTS, constants.NUM_ANTS), dtype=np.complex64)
         duv = constants.C_MS / FRQ / 2.0
         size = constants.IMAGE_RES
-        gridding.grid(U, V, C, duv, size)
+        grid(U, V, C, duv, size)
 
 

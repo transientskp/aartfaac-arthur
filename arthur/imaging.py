@@ -2,8 +2,16 @@ import time
 from datetime import datetime
 import numpy as np
 from arthur import constants
-from arthur.gridding import grid
 from arthur.data import load_antpos
+import warnings
+
+
+try:
+    from arthur.gridding_fast import grid
+except ImportError:
+    warnings.warn("Can't load fast Cython optimized gridder, check your "
+                   "Cython setup. Will use slow pure Python gridder.")
+    from arthur.gridding import grid
 
 
 def correlation_matrix(data, antennas):

@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+from Cython.Build import cythonize
 
 __version__ = "0.2dev"
 
@@ -11,6 +12,7 @@ install_requires = (
     'matplotlib',
     'scipy',
     'monotonic',
+    'Cython',
 )
 
 
@@ -42,5 +44,6 @@ setup(
         "Operating System :: POSIX",
         "Programming Language :: Python :: 3.5",
         "Topic :: Scientific/Engineering",
-        ]
+        ],
+    ext_modules=cythonize("arthur/gridding_fast.pyx"),
 )
