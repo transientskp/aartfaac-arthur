@@ -167,7 +167,7 @@ def listen_socket(port=5000, host='localhost'):
     sid.listen(1)
 
     while True:
-        logger.info("waiting for connection...")
+        logger.info("waiting for connection on port {}...".format(port))
         handler, address = sid.accept()
         logger.info("connection from {}".format(address))
         while True:
@@ -175,3 +175,4 @@ def listen_socket(port=5000, host='localhost'):
                 yield read_data(handler)
             except IOError:
                 break
+                logger.info("ioerror")

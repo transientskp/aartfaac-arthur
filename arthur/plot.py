@@ -40,7 +40,7 @@ def calculate_annotations(date):
     return annotations
 
 
-def plot_image(startdatetime, img_data):
+def plot_image(startdatetime, img_data, frequency):
     """
     Plot a sky image with object overlay.
 
@@ -77,7 +77,7 @@ def plot_image(startdatetime, img_data):
                      color='white', arrowprops=arrowprops,
                      horizontalalignment='left', verticalalignment='bottom')
     moment = startdatetime.strftime("%Y-%m-%d_%H:%M:%S %Z")
-    ax.set_title('XX-%.2f MHz-%s' % (constants.FRQ / 1e6, moment))
+    ax.set_title('XX-%.2f MHz-%s' % (frequency / 1e6, moment))
     ax.set_xlabel(r'$\leftarrow East - West \rightarrow$')
     ax.set_ylabel(r'$\leftarrow South - North \rightarrow$')
     return fig

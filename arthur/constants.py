@@ -12,5 +12,3 @@ LEN_BDY = NUM_BSLN * NUM_POLS * NUM_CHAN * 8  # complex64 (8 bytes)
 HDR_MAGIC = 0x3B98F002
 HERE = path.dirname(__file__)
 ANTPOS = path.join(HERE, 'lba_outer.dat')
-FRQ = 58398437.5  # Central observation frequency in Hz
-BAND_LABEL = int(FRQ / 195312.5)

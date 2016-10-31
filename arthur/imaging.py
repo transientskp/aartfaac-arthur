@@ -2,7 +2,8 @@ import time
 from datetime import datetime
 import numpy as np
 from arthur import constants
-from arthur.gridding import image
+from arthur.gridding import grid
+from arthur.data import load_antpos
 
 
 def correlation_matrix(data, antennas):
@@ -36,7 +37,10 @@ def calc_channels(data):
     return pol
 
 
-def make_image(cm):
+def make_image(cm, frequency):
+    """
+    Create an image from the correlation matrix
+    """
     # No calibration vector applied
     gains = np.ones((1, constants.NUM_ANTS), dtype=np.complex64)
     cal_mat = gains.conj().transpose() * gains
@@ -44,7 +48,13 @@ def make_image(cm):
     # Apply supplied calibration vector
     cm = cal_mat * cm
 
-    return image(cm, constants.ANTPOS, constants.FRQ, constants.IMAGE_RES)
+    U, V = load_antpos(constants.ANTPOS)
+    mDuv = constants.C_MS / frequency / 2.0
+    gridvis = grid(U, V, cm, mDuv, constants.IMAGE_RES)
+    gridvis = np.fft.fftshift(gridvis)
+    gridvis = np.flipud(np.fliplr(gridvis))
+    gridvis = np.conjugate(gridvis)
+    return np.real(np.fft.fftshift(np.fft.fft2(gridvis)))
 
 
 def historical_channels(body, new_row):
@@ -76,13 +86,13 @@ def historical_lag(start_time):
     lag_data[0] = (time.time() - start_time) - 1.0
 
 
-def full_calculation(body):
+def full_calculation(body, frequency):
     # correlation matrix
     cm = correlation_matrix(body, constants.NUM_ANTS)
     corr_data = np.abs(cm)
     corr_data[np.diag_indices(constants.NUM_ANTS)] = np.min(corr_data)
 
-    image = make_image(cm)
+    image = make_image(cm, frequency)
     chan_row = calc_channels(body)
 
     return image, corr_data, chan_row

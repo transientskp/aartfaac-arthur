@@ -56,7 +56,6 @@ def loop_images_in_path(path):
     images = sorted([os.path.join(path, i) for i in os.listdir(path)])
     while True:
         for image_path in images:
-            print(image_path)
             image = casa_image(image_path)
             data = image.getdata().squeeze()
             data -= data.min()

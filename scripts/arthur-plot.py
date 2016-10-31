@@ -5,9 +5,10 @@ import numpy as np
 from arthur.imaging import full_calculation, calculate_lag
 from arthur.io import read_full
 from arthur.plot import plot_image, plot_lag, plot_chan_power, plot_corr_mat, plot_diff
-from arthur.constants import FRQ, NUM_CHAN
+from arthur.constants import NUM_CHAN
 from matplotlib import pyplot
 
+FRQ = 58398437.5  # Central observation frequency in Hz
 
 def main():
     if len(sys.argv) < 2:
