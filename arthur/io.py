@@ -4,8 +4,13 @@ import numpy as np
 from arthur import constants
 import socket
 import logging
-from functools import lru_cache
-from io import BytesIO
+from six import BytesIO
+
+
+try:
+    from functools import lru_cache
+except ImportError:
+    from backports.functools_lru_cache import lru_cache
 
 logger = logging.getLogger(__name__)
 

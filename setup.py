@@ -1,7 +1,6 @@
-from setuptools import setup, find_packages
-from Cython.Build import cythonize
+from setuptools import setup, find_packages, Extension
 
-__version__ = "0.2dev"
+__version__ = "0.2"
 
 
 install_requires = (
@@ -13,6 +12,8 @@ install_requires = (
     'scipy',
     'monotonic',
     'Cython',
+    'backports.functools_lru_cache',
+    'six',
 )
 
 
@@ -45,5 +46,6 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Topic :: Scientific/Engineering",
         ],
-    ext_modules=cythonize("arthur/gridding_fast.pyx"),
+    ext_modules=[Extension("gridding_fast",
+                           sources=["arthur/gridding_fast.pyx"])],
 )

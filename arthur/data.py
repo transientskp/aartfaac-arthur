@@ -1,4 +1,7 @@
-from functools import lru_cache
+try:
+    from functools import lru_cache
+except ImportError:
+    from backports.functools_lru_cache import lru_cache
 
 from arthur import constants
 import numpy as np
