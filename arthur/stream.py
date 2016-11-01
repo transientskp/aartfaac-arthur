@@ -12,19 +12,22 @@ logger = logging.getLogger(__name__)
 FPS = 25
 
 cmd = ["ffmpeg",
-       "-f", "alsa", "-ac", "2", "-i", "hw:0,0",
-       #"-an",
+       # for ffmpeg always first set input then output
 
-       # stream image
+       # silent audio
+       '-f', 'lavfi',
+       '-i', 'anullsrc=channel_layout=stereo:sample_rate=44100',
+
+       # image
        '-re',
        '-f', 'rawvideo',           # probably required for reading from stdin
        '-s', '1024x1024',          # should match image size
        '-pix_fmt', 'gray',
        '-i', '-',                  # read from stdin
 
+       # encoding settings
        "-r", str(FPS),             # the framerate
        "-vcodec", "libx264",       # probably required for flv & rtmp
-
        "-preset", "ultrafast",     # the encoding quality preset
        "-g", "20",
        "-codec:a", "libmp3lame",   # mp3 for audio
@@ -96,4 +99,8 @@ def stream(iterator, pipe):
         for i in range(FPS):
             pipe.stdin.write(serialised)
         duty_cycle = 1  # seconds
+
+        if pipe.poll():
+            print("looks like the video encoder died!")
+            return
         time.sleep(duty_cycle - monotonic.monotonic() % duty_cycle)
