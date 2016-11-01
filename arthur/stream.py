@@ -4,11 +4,16 @@ from PIL import Image
 import subprocess
 import time
 import monotonic
+import logging
+import atexit
+
+logger = logging.getLogger(__name__)
 
 FPS = 25
 
 cmd = ["ffmpeg",
        "-f", "alsa", "-ac", "2", "-i", "hw:0,0",
+       #"-an",
 
        # stream image
        '-re',
@@ -41,6 +46,7 @@ def setup_stream_pipe(rtmp_url):
         subprocess.Popen: a subprocess pipe. Use pipe.stdin.write for writing images.
     """
     pipe = subprocess.Popen(cmd + [rtmp_url], stdin=subprocess.PIPE)
+    atexit.register(pipe.kill)
     return pipe
 
 
@@ -73,7 +79,7 @@ def loop_images_in_path(path):
     images = sorted([os.path.join(path, i) for i in os.listdir(path)])
     while True:
         for image_path in images:
-            return serialize_array(casa_image(image_path).getdata())
+            yield casa_image(image_path).getdata()
 
 
 def stream(iterator, pipe):
@@ -85,7 +91,9 @@ def stream(iterator, pipe):
         pipe (subprocess.Popen): a pipe created with setup_stream_pipe()
     """
     for image_bytes in iterator:
+        logger.debug("streaming new image")
+        serialised = serialize_array(image_bytes)
         for i in range(FPS):
-            pipe.stdin.write(serialize_array(image_bytes))
+            pipe.stdin.write(serialised)
         duty_cycle = 1  # seconds
         time.sleep(duty_cycle - monotonic.monotonic() % duty_cycle)

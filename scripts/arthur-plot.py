@@ -25,7 +25,7 @@ def main():
     chan_data = np.zeros((NUM_CHAN, 60), dtype=np.float32)
 
     for date, body in read_full(path):
-        img_data, corr_data, chan_row = full_calculation(body)
+        img_data, corr_data, chan_row = full_calculation(body, FRQ)
         lags += [calculate_lag(date).seconds]
         if prev_data is None:
             prev_data = img_data
@@ -34,7 +34,7 @@ def main():
         diff_data = img_data - prev_data
         prev_data = img_data
 
-    fig_img = plot_image(date, img_data)
+    fig_img = plot_image(date, img_data, FRQ)
     fig_lag = plot_lag(lags)
     fig_chan = plot_chan_power(chan_data)
     fig_cm = plot_corr_mat(corr_data, FRQ, date)
