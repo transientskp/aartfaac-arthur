@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages, Extension
 
-__version__ = "0.3"
+__version__ = "0.4"
 
 
 install_requires = (
