@@ -12,7 +12,7 @@ Things like:
 requirements
 ------------
 
-* Python 3
+* Python 3, but python 2 mostly works.
 
 
 Why ARTHUR?

@@ -27,7 +27,6 @@ cmd = ["ffmpeg",
        "-threads", "6",
        "-bufsize", "512k",
        "-f", "flv",                # required for rtmp
-       {}                          # the rtmp stream url
        ]
 
 
@@ -41,8 +40,26 @@ def setup_stream_pipe(rtmp_url):
     returns:
         subprocess.Popen: a subprocess pipe. Use pipe.stdin.write for writing images.
     """
-    pipe = subprocess.Popen(cmd.format(rtmp_url), stdin=subprocess.PIPE)
+    pipe = subprocess.Popen(cmd + [rtmp_url], stdin=subprocess.PIPE)
     return pipe
+
+
+def serialize_array(array):
+    """
+    serialize a numpy array into a binary stream which can be streamed
+
+    args:
+        array (numpy.array)
+
+    returns:
+        bytes
+    """
+    data = array.squeeze()
+    data -= data.min()
+    data *= (255 / data.max())
+    arr = data.astype('uint8')
+    im = Image.fromarray(arr, 'L')
+    return im.tobytes()
 
 
 def loop_images_in_path(path):
@@ -56,26 +73,19 @@ def loop_images_in_path(path):
     images = sorted([os.path.join(path, i) for i in os.listdir(path)])
     while True:
         for image_path in images:
-            image = casa_image(image_path)
-            data = image.getdata().squeeze()
-            data -= data.min()
-            data *= (255 / data.max())
-            arr = data.astype('uint8')
-            im = Image.fromarray(arr, 'L')
-            return im.tobytes()
+            return serialize_array(casa_image(image_path).getdata())
 
 
-def stream(iterator, rtmp_stream):
+def stream(iterator, pipe):
     """
-    stream the images returned by generated to rtmp server
+    stream the images returned by generated to rtmp server.
 
     args:
         iterator (iterator): a image data iterator
-        rtmp_stream (str): a rtmp url
+        pipe (subprocess.Popen): a pipe created with setup_stream_pipe()
     """
-    pipe = setup_stream_pipe(rtmp_stream)
     for image_bytes in iterator:
         for i in range(FPS):
-            pipe.stdin.write(image_bytes)
+            pipe.stdin.write(serialize_array(image_bytes))
         duty_cycle = 1  # seconds
         time.sleep(duty_cycle - monotonic.monotonic() % duty_cycle)

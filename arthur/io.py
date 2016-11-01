@@ -6,7 +6,6 @@ import socket
 import logging
 from six import BytesIO
 
-
 try:
     from functools import lru_cache
 except ImportError:
@@ -67,7 +66,9 @@ def reader(producer, bytes_):
             recv = producer.recv(count)
             if len(recv) == 0:
                 logger.warning("client closed connection")
+                producer.close()
                 raise IOError("client closed connection")
+
             count -= len(recv)
             result.write(recv)
         return result.getvalue()
@@ -180,4 +181,4 @@ def listen_socket(port=5000, host='localhost'):
                 yield read_data(handler)
             except IOError:
                 break
-                logger.info("ioerror")
+

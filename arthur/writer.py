@@ -10,6 +10,62 @@ filename_template = "S{band}_R01-63_{timestamp}_{figure}.png"
 logger = logging.getLogger(__name__)
 
 
+def write_images_to_disk(date, img_data, corr_data, lags, prev_data,
+                         chan_data, chan_row, frequency, prefix):
+    """
+    Calculate and write various images to disk.
+
+    Note that this function has side affects to keep track of history.
+
+    args:
+        date (datetime.datetime)
+        img_data (numpy.array): the image data
+        corr_data (numpy.array): the correlation data
+        lags (numpy.array): history of difference between header timestamp and
+                            arrival
+        prev_data (numpy.array): the previous image, used for calculate diff
+        chan_data (numpy.array): the historical chan data, will be
+                                 updated using chan_row
+        chan_row (numpy.array): the new chan array
+        frequency (float): the frequency of the observation
+        prefix (str): where to write the images to
+    """
+    lags += [calculate_lag(date).seconds]
+    if prev_data is None:
+        prev_data = img_data
+
+        # update historical data
+    chan_data = np.roll(chan_data, 1)
+    chan_data[:, 0] = chan_row
+    diff_data = img_data - prev_data
+    prev_data = img_data
+
+    figures = (
+        ('image', plot_image(date, img_data, frequency)),
+        ('lag', plot_lag(lags)),
+        ('chan', plot_chan_power(chan_data)),
+        ('corr', plot_corr_mat(corr_data, frequency, date)),
+        ('diff', plot_diff(diff_data, frequency, date)),
+    )
+
+    timestamp = date.strftime("T%d-%m-%Y-%H-%M-%S%Z")
+    some_constant = 195312.5  # not sure what this is, ask Folkert
+    for name, figure in figures:
+        args = {'band': int(frequency / some_constant),
+                'timestamp': timestamp,
+                'figure': name}
+        filename = filename_template.format(**args)
+        full_filename = path.join(prefix, filename)
+        logger.info('writing {}'.format(filename))
+        figure.savefig(full_filename)  # pad_inches=0, bbox_inches='tight')
+
+        # symlink to latest version
+        link_target = path.join(prefix, name + '.png')
+        if path.islink(link_target):
+            unlink(link_target)
+        symlink(filename, link_target)
+
+
 def create_all_images(iterable, prefix, frequency):
     """
     iterate over iterable containing visibilities, makes images and writes them
@@ -22,45 +78,17 @@ def create_all_images(iterable, prefix, frequency):
     """
     # initialise historical structures
     lags = []
-    prev_data = date = img_data = corr_data = diff_data = None
+    prev_data = None
     chan_data = np.zeros((NUM_CHAN, 60), dtype=np.float32)
 
-    for generator in iterable:
-        for date, body in generator:
-            img_data, corr_data, chan_row = full_calculation(body, frequency)
-            lags += [calculate_lag(date).seconds]
-            if prev_data is None:
-                prev_data = img_data
+    import time
+    for date, body in iterable:
 
-                # update historical data
-            chan_data = np.roll(chan_data, 1)
-            chan_data[:, 0] = chan_row
-            diff_data = img_data - prev_data
-            prev_data = img_data
-
-            figures = (
-                ('image', plot_image(date, img_data, frequency)),
-                ('lag', plot_lag(lags)),
-                ('chan', plot_chan_power(chan_data)),
-                ('corr', plot_corr_mat(corr_data, frequency, date)),
-                ('diff', plot_diff(diff_data, frequency, date)),
-            )
-
-            timestamp = date.strftime("T%d-%m-%Y-%H-%M-%S%Z")
-            some_constant = 195312.5  # not sure what this is, ask Folkert
-            for name, figure in figures:
-                args = {'band': int(frequency / some_constant),
-                        'timestamp': timestamp,
-                        'figure': name}
-                filename = filename_template.format(**args)
-                full_filename = path.join(prefix, filename)
-                logger.info('writing {}'.format(filename))
-                figure.savefig(full_filename)  # pad_inches=0, bbox_inches='tight')
-
-                # symlink to latest version
-                link_target = path.join(prefix, name + '.png')
-                if path.islink(link_target):
-                    unlink(link_target)
-                symlink(filename, link_target)
-
-
+        start = time.time()
+        img_data, corr_data, chan_row = full_calculation(body, frequency)
+        write_images_to_disk(date, img_data, corr_data, lags, prev_data,
+                             chan_data, chan_row, frequency, prefix)
+        prev_data = img_data
+        end = time.time()
+        logger.info("creating and writing images took {}s".format(end-start))
+        yield img_data
