@@ -1,9 +1,11 @@
 import logging
 from os import path, symlink, unlink
 import numpy as np
-from arthur.imaging import full_calculation, calculate_lag
+import time
+from arthur.imaging import  calculate_lag
 from arthur.plot import plot_image, plot_lag, plot_chan_power, plot_corr_mat, plot_diff
 from arthur.constants import NUM_CHAN
+from matplotlib import pyplot as plt
 
 filename_template = "S{band}_R01-63_{timestamp}_{figure}.png"
 
@@ -58,6 +60,7 @@ def write_images_to_disk(date, img_data, corr_data, lags, prev_data,
         full_filename = path.join(prefix, filename)
         logger.info('writing {}'.format(filename))
         figure.savefig(full_filename)  # pad_inches=0, bbox_inches='tight')
+        plt.close(figure)  # required to free up memory
 
         # symlink to latest version
         link_target = path.join(prefix, name + '.png')
@@ -66,7 +69,7 @@ def write_images_to_disk(date, img_data, corr_data, lags, prev_data,
         symlink(filename, link_target)
 
 
-def create_all_images(iterable, prefix, frequency):
+def make_imaging_closure(prefix, frequency):
     """
     iterate over iterable containing visibilities, makes images and writes them
     into prefix:
@@ -75,20 +78,27 @@ def create_all_images(iterable, prefix, frequency):
         iterable (iterable): an iterable of generators generating visibilites
         prefix (str): a filesystem prefix where to write the images to
         frequency (float): the central frequency
+
+    return:
+
     """
     # initialise historical structures
     lags = []
     prev_data = None
     chan_data = np.zeros((NUM_CHAN, 60), dtype=np.float32)
 
-    import time
-    for date, body in iterable:
+    # we create a closure here so we can store state (
+    def closure(date, img_data, corr_data, chan_row):
+        """
+        args:
+            date:
+            img_data:
+            corr_data:
+            chan_row:
 
-        start = time.time()
-        img_data, corr_data, chan_row = full_calculation(body, frequency)
+        """
+        nonlocal prev_data
         write_images_to_disk(date, img_data, corr_data, lags, prev_data,
                              chan_data, chan_row, frequency, prefix)
         prev_data = img_data
-        end = time.time()
-        logger.info("creating and writing images took {}s".format(end-start))
-        yield img_data
+    return closure

@@ -65,7 +65,9 @@ def serialize_array(array):
     """
     data = array.squeeze()
     data -= data.min()
-    data *= (255 / data.max())
+    max_ = data.max()
+    if max_ > 0:
+        data *= (255 / data.max())
     arr = data.astype('uint8')
     im = Image.fromarray(arr, 'L')
     return im.tobytes()
@@ -85,22 +87,21 @@ def loop_images_in_path(path):
             yield casa_image(image_path).getdata()
 
 
-def stream(iterator, pipe):
+def stream(frame, pipe):
     """
     stream the images returned by generated to rtmp server.
 
     args:
-        iterator (iterator): a image data iterator
+        frame: an image frame
         pipe (subprocess.Popen): a pipe created with setup_stream_pipe()
     """
-    for image_bytes in iterator:
-        logger.debug("streaming new image")
-        serialised = serialize_array(image_bytes)
-        for i in range(FPS):
-            pipe.stdin.write(serialised)
-        duty_cycle = 1  # seconds
+    logger.debug("streaming new image")
+    serialised = serialize_array(frame)
+    for i in range(FPS):
+        pipe.stdin.write(serialised)
+    duty_cycle = 1  # seconds
 
-        if pipe.poll():
-            print("looks like the video encoder died!")
-            return
-        time.sleep(duty_cycle - monotonic.monotonic() % duty_cycle)
+    if pipe.poll():
+        print("looks like the video encoder died!")
+        return
+    time.sleep(duty_cycle - monotonic.monotonic() % duty_cycle)
