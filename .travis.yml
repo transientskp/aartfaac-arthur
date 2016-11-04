@@ -11,7 +11,7 @@ before_install:
 - sudo apt-get install -qy libcasacore2-dev libboost-python-dev libcfitsio3-dev wcslib-dev
 - pip install -r test/requirements.txt
 - cd test/data
-- tar zxvf 2aartfaac.vs.tgz
+- tar zxvf 2aartfaac.vis.tgz
 - cd ../..
 install:
 - pip install .
