@@ -175,7 +175,7 @@ def listen_socket(port=5000, host='localhost'):
     while True:
         logger.info("waiting for connection on port {}...".format(port))
         handler, address = sid.accept()
-        logger.info("connection from {}".format(address))
+        logger.info("connection from {}:{}".format(*address))
         while True:
             try:
                 yield read_data(handler)
