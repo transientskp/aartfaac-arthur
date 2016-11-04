@@ -1,0 +1,28 @@
+language: python
+sudo: required
+dist: trusty
+python:
+- 2.7
+- 3.5
+before_install:
+- sudo apt-get install -y software-properties-common
+- sudo add-apt-repository -y ppa:radio-astro/main
+- sudo apt-get update -q
+- sudo apt-get install -qy libcasacore2-dev libboost-python-dev libcfitsio3-dev wcslib-dev
+- pip install -r test/requirements.txt
+install:
+- pip install .
+script:
+- nosetests --with-coverage  --cover-package=arthur
+- pep8 --ignore=E501 arthur
+after_success:
+- coveralls
+deploy:
+  provider: pypi
+  user: gijzelaerr
+  password:
+    secure: L9v58cTsHlbagZOzMYJKh861O4/4w+7piYrLeHg/WLvOGTWJkMHjI4I3ZI3ALxYiNIOFEhQHoJf4LGBq2WCxKNKwkZcUbR7UakvvR64BDb0wE655QKYKXBca8zkebUSt5Vm34ZHL8be0ocugt83ORVftKi5kdI6M41yIVsxiJs2lPcMckdK1JU/JWjrBOVQSyvusPEKw0PeY4OD+45KqAZOn3C3oGT9W83Y5L0c++ig/1SkAqQ0lrg7WXlsEBqEipYYS+Z2PZ8hJzqhy5Hp3O6PaxW3zO8oc2/tZrYmNKF4XDNsmAgzpuDGdm/ckMVSI63bLs4MvB1PkkiWlGtzpIVxa9gnT+aqlQcue1MtNS6cHtvJ1IhztWY/FbclJmXC7GLxfOdwlP80K7mfcQxI2jowQ69HJBsUgsqYRpf5p46R1hXddzpOgAJKzApL5OC2EKdSZZwNV0UlF1iBDxXe2M3QCisVGzwMA+wDT1sGGFfkDDmljdc7QQFpSHQax3QjhoMLhUSUads5mlm1vkrJtnM+G9WzhVoFAKRaJEnHwGd8y1IFwYGqdVSlr5sANKebuntPNNGeJISOlHsLKi6jTvXXZEIDJYRNhmz1Nc0QW+bYeBDu9Hkv9pzyD+kRdFZSgSZ6+vCUzKY1aP0FdzZ8pp6oFmlNwgB0me61qHWjHABc=
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: transientskp/aartfaac-arthur

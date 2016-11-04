@@ -1,6 +1,6 @@
-from setuptools import setup, find_packages, Extension
+from setuptools import setup, find_packages
 
-__version__ = "0.4"
+__version__ = "0.5"
 
 
 install_requires = (
@@ -11,7 +11,6 @@ install_requires = (
     'matplotlib',
     'scipy',
     'monotonic',
-    'Cython',
     'backports.functools_lru_cache',
     'six',
 )
@@ -39,13 +38,13 @@ setup(
     keywords="science astronomy aartfaac",
     url="https://github.com/transientskp/aartfaac-arthur",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: POSIX",
         "Programming Language :: Python :: 3.5",
         "Topic :: Scientific/Engineering",
         ],
-    ext_modules=[Extension("gridding_fast",
-                           sources=["arthur/gridding_fast.pyx"])],
+    #ext_modules=[Extension("gridding_fast",
+    #                       sources=["arthur/gridding_fast.pyx"])],
 )
